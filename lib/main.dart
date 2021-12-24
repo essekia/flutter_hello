@@ -45,7 +45,9 @@ class FirstRoute extends StatelessWidget {
             );
           },
         ),
-          YoutubeChannelApp(),
+          Expanded(
+            child: SingleChildScrollView( child: YoutubeChannelApp()),
+          ),
     ]
       ),
     );

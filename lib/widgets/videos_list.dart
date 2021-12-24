@@ -27,11 +27,12 @@ class _DemoAppState extends State<YoutubeChannelApp> {
 
   static String apiKey = "AIzaSyD1rB5tSMhu3b7W2X3SIEdFfQ-gimxysfQ";
 
-  YoutubeAPI youtube = YoutubeAPI(apiKey, maxResults: 5, type: 'channel');
+  YoutubeAPI youtube = YoutubeAPI(apiKey, maxResults: 15, type: 'channel');
   List<YouTubeVideo> videoResult = [];
   List allVideos = [];
   List channels = [];
   List topVideos = [];
+  List _allVideosState = [];
 
   @override
   void initState() {
@@ -50,10 +51,15 @@ class _DemoAppState extends State<YoutubeChannelApp> {
     print(channels);
 
     for (var ii = 0; ii < channels.length; ii++) {
+      print('loop: ' + ii.toString());
       List channelContents = await getChannelVideos(channels[ii]);
       allVideos.addAll(channelContents);
-
+      var totalContent = channelContents.length;
+      log('channelContents.length: ' + totalContent.toString());
+      // print(totalContent);
     }
+
+    setState(() { _allVideosState = allVideos; });
 
     // for (var jj = 0; jj < 3; jj++) {
     //   topVideos[jj] = allVideos[jj];
@@ -74,7 +80,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
   Future getChannelVideos(channelId) async {
     var _baseUrl = 'www.youtube.googleapis.com';
     // var channelId = 'UC5C1JAn2BOuquNNXI2oEgaA';
-    var channelUri = Uri.parse('https://youtube.googleapis.com/youtube/v3/search?part=id,snippet&channelId='+channelId+'&key='+apiKey);
+    var channelUri = Uri.parse('https://youtube.googleapis.com/youtube/v3/search?part=id,snippet&maxResults=15&channelId='+channelId+'&key='+apiKey);
 
     var method1Response = await http.get(channelUri);
     log('Method1 Response status: ${method1Response.statusCode}');
@@ -120,9 +126,10 @@ class _DemoAppState extends State<YoutubeChannelApp> {
     var sampleArray = ["one", "two", "three"];
     var channels = UserSimplePreferences.getChannels() ?? [];
     return ListView(
-        scrollDirection: Axis.vertical,
+        // scrollDirection: Axis.vertical,
+        physics: const NeverScrollableScrollPhysics(), // new
         shrinkWrap: true,
-        children: allVideos.map<Widget>(listItem).toList()
+        children: _allVideosState.map<Widget>(listItem).toList()
     );
 
     return ListView(
@@ -130,9 +137,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
         shrinkWrap: true,
         children: channels.map<Widget>(listArray).toList()
     );
-
     // return const Text("Hello");
-
   }
 
   Widget listArray(String countThis) {
