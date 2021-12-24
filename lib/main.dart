@@ -6,16 +6,19 @@ import 'package:http/http.dart' as http;
 // Our files
 import 'youtube.dart';
 import 'youtube_search.dart';
-import 'youtube_channel.dart';
+import 'widgets/videos_list.dart';
 import 'add_channel.dart';
-
+import 'utils/preference.dart';
 
 // void main() {
 //   HttpOverrides.global = new MyHttpOverrides();
 //   runApp(const MyApp());
 // }
 
-void main() {
+Future main() async  {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await UserSimplePreferences.init();
   runApp(const MaterialApp(
     title: 'Navigation Basics',
     home: FirstRoute(),
@@ -31,16 +34,19 @@ class FirstRoute extends StatelessWidget {
       appBar: AppBar(
         title: const Text('First Route'),
       ),
-      body: Center(
-        child: ElevatedButton(
+      body: Column(
+        children: [
+          ElevatedButton(
           child: const Text('Open route'),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddChannels()),
+              MaterialPageRoute(builder: (context) => AddChannels()),
             );
           },
         ),
+          YoutubeChannelApp(),
+    ]
       ),
     );
   }

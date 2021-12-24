@@ -2,10 +2,34 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'utils/preference.dart';
 
-class AddChannels extends StatelessWidget {
-  const AddChannels({Key? key}) : super(key: key);
+class AddChannels extends StatefulWidget {
+  @override
+  _AddChannelsState createState() => _AddChannelsState();
+}
+
+class _AddChannelsState extends State<AddChannels> {
+
+  // const _AddChannelsState({Key? key}) : super(key: key);
+  List<String> channels = [];
+  @override
+  void initState() {
+    super.initState();
+    saveChannel();
+    channels = UserSimplePreferences.getChannels() ?? [];
+
+    // print('--hello');
+  }
+
+  Future<void> saveChannel() async {
+    var userName = "Paul";
+    var channels = ['UC5C1JAn2BOuquNNXI2oEgaA', 'UCIPPMRA040LQr5QPyJEbmXA'];
+    UserSimplePreferences.setChannels(channels);
+    // SharedPreferences prefsJsonString = await SharedPreferences.getInstance();
+    // Map decode_options = jsonDecode(prefsJsonString);
+    // prefs.setString('userName', userName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +66,7 @@ class AddChannels extends StatelessWidget {
 
   }
 }
+
 
 
 
