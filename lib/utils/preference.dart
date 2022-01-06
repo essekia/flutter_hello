@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -29,6 +31,11 @@ class UserSimplePreferences {
     print(channelsString);
     await _preferences?.setStringList(_keyChannels, channelsString.cast<String>() );
 }
+
+  static Future resetChannels() async {
+    log("resetChannels");
+     setChannels([]);
+  }
 
   static Future addChannel(Map<String, dynamic> channel) async {
     print("addChannel channels: ");

@@ -42,6 +42,7 @@ class _ChannelsListState extends State<ChannelsList> {
 
   Future<void> deleteChannel(channelId) async {
     UserSimplePreferences.deleteChannel(channelId);
+    setState(() {});
   }
 
 

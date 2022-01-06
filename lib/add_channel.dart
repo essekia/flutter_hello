@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'utils/preference.dart';
 import 'utils/youtube_api.dart';
 import '../utils/dummy_preference.dart';
+import 'widgets/channels_list.dart';
 
 
 class AddChannels extends StatefulWidget {
@@ -19,7 +20,7 @@ class _AddChannelsState extends State<AddChannels> {
   @override
   void initState() {
     super.initState();
-    // dummySaveChannel();
+    // UserSimplePreferences.resetChannels();
     channels = UserSimplePreferences.getChannels() ?? [];
 
     // print('--hello');
@@ -54,59 +55,75 @@ class _AddChannelsState extends State<AddChannels> {
     var  endIndex = channelFieldData.indexOf(end);
     var channelId = (channelFieldData.substring(endIndex + end.length , channelFieldData.length));
     print("channelId: " + channelId);
-    var channelVideos = await YoutubeApi.getChannelVideos(channelId);
-    print("channelVideos: ");
-    print(channelVideos[0]);
-    print(channelVideos[0]['snippet']);
-    print(" -- channelVideos: ");
+    var channelVideos = await YoutubeApi.getChannelInfo(channelId);
 
-    var channelInfoToStore = {
-      'channelId': channelVideos[0]['snippet']['channelId'],
-      'title': channelVideos[0]['snippet']['title'],
-      'thumbnailMedium':  channelVideos[0]['snippet']['thumbnails']['medium']['url'],
-    };
-
-    UserSimplePreferences.addChannel(channelInfoToStore);
+    // print("channelVideos: ");
+    // print(channelVideos[0]);
+    // print(channelVideos[0]['snippet']);
+    // print(" -- channelVideos: ");
 
 
 
-    // Get channel information + videos
-    // Store channel information to sharedPreferences.channels
-    // (maybe) Store video information to sharedPreferences.videos
+
+    // var channelInfoToStore = {
+    //   'channelId': channelVideos[0]['snippet']['channelId'],
+    //   'title': channelVideos[0]['snippet']['title'],
+    //   'thumbnailMedium':  channelVideos[0]['snippet']['thumbnails']['medium']['url'],
+    // };
+
+    UserSimplePreferences.addChannel(channelVideos);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChannelsList()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Second Route"),
+          title: const Text("Add Channel"),
         ),
-        body: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Go back!'),
-              ),
+        body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
 
-              TextField(
-                controller: channelFieldController,
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter Channel ID',
+
+                TextField(
+                  controller: channelFieldController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Enter Channel ID',
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                ),
-                onPressed: () { saveChannel(channelFieldController.text);},
-                child: Text('Looks like a RaisedButton'),
+
+             Row(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Go back!'),
+                  ),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                    ),
+                    onPressed: () { saveChannel(channelFieldController.text);},
+                    child: Text('Add Channel'),
+                  )
+                ]
               )
-            ]
+
+          ],
         )
+        ),
     );
 
   }

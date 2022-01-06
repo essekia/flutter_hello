@@ -40,6 +40,7 @@ dependencies:
   youtube_api: ^1.0.4
   shared_preferences: ^2.0.11
   youtube_explode_dart: ^1.10.8
+  youtube_player_iframe: ^2.2.2
 
 dev_dependencies:
   flutter_test:

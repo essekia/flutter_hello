@@ -9,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/preference.dart';
 import '../utils/youtube_api.dart';
 
+// Routes
+import 'video_player.dart';
+
 class YoutubeChannel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -107,7 +110,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
         // scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(), // new
         shrinkWrap: true,
-        children: _allVideosState.map<Widget>(listItem).toList()
+        children: _allVideosState.take(50).map<Widget>(listItem).toList()
     );
 
 
@@ -117,7 +120,14 @@ class _DemoAppState extends State<YoutubeChannelApp> {
   Widget listArray(String countThis) {
     return Text(countThis);
   }
+ onVideoClick(videoId) {
+  print("onVideoClick ");
 
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => VideoPlayer(videoId: videoId)),
+  );
+}
   static getVideoObject(video){
     print("getVideoObject");
     print(video);
@@ -158,7 +168,9 @@ class _DemoAppState extends State<YoutubeChannelApp> {
 
     // return Text("hello");
       return Card(
-        child: Container(
+        child: GestureDetector(
+          onTap: () {  onVideoClick(videoObject['id']);   },
+          child: Container(
           margin: EdgeInsets.symmetric(vertical: 7.0),
           padding: EdgeInsets.all(12.0),
           child: Row(
@@ -197,6 +209,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
               )
             ],
           ),
+        ),
         ),
       );
 
