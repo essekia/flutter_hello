@@ -8,6 +8,7 @@ import 'youtube.dart';
 import 'youtube_search.dart';
 import 'widgets/videos_list.dart';
 import 'add_channel.dart';
+import 'widgets/channels_list.dart';
 import 'utils/preference.dart';
 
 // void main() {
@@ -18,6 +19,7 @@ import 'utils/preference.dart';
 Future main() async  {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await UserSimplePreferences.init();
   await UserSimplePreferences.init();
   runApp(const MaterialApp(
     title: 'Navigation Basics',
@@ -36,15 +38,28 @@ class FirstRoute extends StatelessWidget {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-          child: const Text('Open route'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddChannels()),
-            );
-          },
-        ),
+          Row(
+          children: [
+            ElevatedButton(
+              child: const Text('Add Channel'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddChannels()),
+                );
+              },
+            ),
+              ElevatedButton(
+                child: const Text('Channels List'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChannelsList()),
+                  );
+                },
+              ),
+              ],
+          ),
           Expanded(
             child: SingleChildScrollView( child: YoutubeChannelApp()),
           ),

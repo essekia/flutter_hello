@@ -7,7 +7,7 @@ import 'dart:io';
 import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/preference.dart';
-
+import '../utils/youtube_api.dart';
 
 class YoutubeChannel extends StatelessWidget {
   @override
@@ -46,34 +46,8 @@ class _DemoAppState extends State<YoutubeChannelApp> {
 
   // Main Function
   Future<void> getAllChannelVideos() async {
-    channels = UserSimplePreferences.getChannels() ?? [];
-    print('channels: ');
-    print(channels);
-
-    for (var ii = 0; ii < channels.length; ii++) {
-      print('loop: ' + ii.toString());
-      List channelContents = await getChannelVideos(channels[ii]);
-      allVideos.addAll(channelContents);
-      var totalContent = channelContents.length;
-      log('channelContents.length: ' + totalContent.toString());
-      // print(totalContent);
-    }
-
+   var allVideos =  await YoutubeApi.getAllChannelVideos();
     setState(() { _allVideosState = allVideos; });
-
-    // for (var jj = 0; jj < 3; jj++) {
-    //   topVideos[jj] = allVideos[jj];
-    // }
-
-
-
-    var totalVideos = allVideos.length;
-    print('allVideos');
-    print(allVideos);
-    log('allVideos.length');
-    print(totalVideos);
-
-    // log(allVideos[0]['etag']);
 
   }
 
@@ -124,7 +98,11 @@ class _DemoAppState extends State<YoutubeChannelApp> {
   Widget build(BuildContext context) {
 
     var sampleArray = ["one", "two", "three"];
-    var channels = UserSimplePreferences.getChannels() ?? [];
+    // var channels = UserSimplePreferences.getChannels() ?? [];
+    print("videosList build - channels" );
+    print(channels);
+    print("_allVideosState: ");
+    print(_allVideosState);
     return ListView(
         // scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(), // new
@@ -132,11 +110,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
         children: _allVideosState.map<Widget>(listItem).toList()
     );
 
-    return ListView(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        children: channels.map<Widget>(listArray).toList()
-    );
+
     // return const Text("Hello");
   }
 
@@ -144,12 +118,43 @@ class _DemoAppState extends State<YoutubeChannelApp> {
     return Text(countThis);
   }
 
-  Widget listItem(video) {
-    log('listVideo');
+  static getVideoObject(video){
+    print("getVideoObject");
     print(video);
-    if (video['id']['kind'] != "youtube#video") {
-      return Card();
-    }
+    // var video = await yt!.videos.get(VideoId(videoUrl));
+    var videoObject = {
+      'id': video.id.value,
+      'title': video.title,
+      'kind' : 'video',
+      'thumbnailUrl' : video.thumbnails.mediumResUrl
+    };
+    print(videoObject);
+
+    return videoObject;
+  }
+
+  static getVideoObjectOld(video){
+
+    var videoObject = {
+      'id': video['id']['videoId'],
+      'title': video.channelTitle,
+      'kind' : video['id']['kind'],
+      'thumbnailUrl' : video['snippet']['thumbnails']['medium']['url'],
+    };
+    print(videoObject);
+
+    return videoObject;
+  }
+  Widget listItem(video) {
+    // log('listVideo');
+    var videoObject = getVideoObject(video);
+    // print(videoObject);
+    // log('listVideo--');
+    // return Card();
+
+    // if (videoObject['kind'] != "youtube#video") {
+    //   return Card();
+    // }
 
     // return Text("hello");
       return Card(
@@ -162,7 +167,7 @@ class _DemoAppState extends State<YoutubeChannelApp> {
               Padding(
                 padding: const EdgeInsets.only(right: 20.0),
                 child: Image.network(
-                  video['snippet']['thumbnails']['medium']['url'] ?? '',
+                  videoObject['thumbnailUrl'] ?? '',
                   width: 120.0,
                 ),
               ),
@@ -171,20 +176,20 @@ class _DemoAppState extends State<YoutubeChannelApp> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      video['snippet']['thumbnails']['title'] ?? '',
+                      videoObject['title'] ?? '',
                       softWrap: true,
                       style: TextStyle(fontSize: 18.0),
                     ),
                     // Padding(
                     //   padding: EdgeInsets.symmetric(vertical: 3.0),
                     //   child: Text(
-                    //     video.channelTitle,
+                    //     video.title,
                     //     softWrap: true,
                     //     style: TextStyle(fontWeight: FontWeight.bold),
                     //   ),
                     // ),
                     Text(
-                      video['id']['videoId']?? '',
+                      videoObject['id'] ?? '',
                       softWrap: true,
                     ),
                   ],
