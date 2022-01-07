@@ -69,12 +69,6 @@ class _DemoAppState extends State<YoutubeChannelApp> {
 
     List channelContents = await channelContentsBody['items'];
     return channelContents;
-    allVideos.addAll(channelContents);
-    print('allVideos');
-    print(allVideos);
-    log('allVideos');
-    log(allVideos[0]['etag']);
-
   }
 
   Future<void> callAPI() async {
@@ -106,6 +100,8 @@ class _DemoAppState extends State<YoutubeChannelApp> {
     print(channels);
     print("_allVideosState: ");
     print(_allVideosState);
+    // final videosList = _allVideosState.take(50).toList();
+    _allVideosState.sort((a, b) => a['orderInChannel'].compareTo(b['orderInChannel']));
     return ListView(
         // scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(), // new
@@ -157,7 +153,8 @@ class _DemoAppState extends State<YoutubeChannelApp> {
   }
   Widget listItem(video) {
     // log('listVideo');
-    var videoObject = getVideoObject(video);
+    // var videoObject = getVideoObject(video);
+    var videoObject = video;
     // print(videoObject);
     // log('listVideo--');
     // return Card();
@@ -192,14 +189,6 @@ class _DemoAppState extends State<YoutubeChannelApp> {
                       softWrap: true,
                       style: TextStyle(fontSize: 18.0),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(vertical: 3.0),
-                    //   child: Text(
-                    //     video.title,
-                    //     softWrap: true,
-                    //     style: TextStyle(fontWeight: FontWeight.bold),
-                    //   ),
-                    // ),
                     Text(
                       videoObject['id'] ?? '',
                       softWrap: true,

@@ -73,10 +73,25 @@ class YoutubeApi {
       var channel = channels[ii];
       print('loop: ' + ii.toString());
       List channelContents = await getChannelVideos(channel['channelId']);
-      allVideos.addAll(channelContents);
-      var totalContent = channelContents.length;
-      log('channelContents.length: ' + totalContent.toString());
-      // print(totalContent);
+      var orderInChannel = 0;
+      final videosOfChannel = channelContents.map((video){
+        var videoObject = {
+          'id': video.id.value,
+          'title': video.title,
+          'kind' : 'video',
+          'thumbnailUrl' : video.thumbnails.mediumResUrl,
+          'orderInChannel' : orderInChannel,
+        };
+        orderInChannel++;
+
+        return videoObject;
+      }).toList();
+
+
+      allVideos.addAll(videosOfChannel);
+      var totalContent = allVideos.length;
+      log('allVideos.length: ' + totalContent.toString());
+      print(totalContent);
     }
 
     return allVideos;
