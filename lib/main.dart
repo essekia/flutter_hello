@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 
 // Our files
-import 'youtube.dart';
-import 'youtube_search.dart';
-
 import 'add_channel.dart';
-
 import 'utils/preference.dart';
 
 // Routes
@@ -16,10 +9,7 @@ import 'widgets/channels_list.dart';
 import 'widgets/videos_list.dart';
 import 'widgets/video_player.dart';
 
-// void main() {
-//   HttpOverrides.global = new MyHttpOverrides();
-//   runApp(const MyApp());
-// }
+
 
 Future main() async  {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +29,7 @@ class FirstRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('First Route'),
+        title: const Text('Stream'),
       ),
       body: Column(
         children: [
@@ -68,7 +58,7 @@ class FirstRoute extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => VideoPlayer()),
+                  MaterialPageRoute(builder: (context) => VideoPlayer(videoId: 'K18cpp_-gP8')),
                 );
               },
             ),

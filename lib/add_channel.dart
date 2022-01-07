@@ -37,14 +37,8 @@ class _AddChannelsState extends State<AddChannels> {
 
   Future<void> dummySaveChannel() async {
     print("dummySaveChannel");
-    var userName = "Paul";
-    // var channels = ['UC5C1JAn2BOuquNNXI2oEgaA', 'UCIPPMRA040LQr5QPyJEbmXA'];
     var channels = DummyUserSimplePreferences.getChannels() ?? [];
-
     UserSimplePreferences.setChannels(channels);
-    // SharedPreferences prefsJsonString = await SharedPreferences.getInstance();
-    // Map decode_options = jsonDecode(prefsJsonString);
-    // prefs.setString('userName', userName);
   }
 
   Future<void> saveChannel(channelFieldData) async {
@@ -56,20 +50,6 @@ class _AddChannelsState extends State<AddChannels> {
     var channelId = (channelFieldData.substring(endIndex + end.length , channelFieldData.length));
     print("channelId: " + channelId);
     var channelVideos = await YoutubeApi.getChannelInfo(channelId);
-
-    // print("channelVideos: ");
-    // print(channelVideos[0]);
-    // print(channelVideos[0]['snippet']);
-    // print(" -- channelVideos: ");
-
-
-
-
-    // var channelInfoToStore = {
-    //   'channelId': channelVideos[0]['snippet']['channelId'],
-    //   'title': channelVideos[0]['snippet']['title'],
-    //   'thumbnailMedium':  channelVideos[0]['snippet']['thumbnails']['medium']['url'],
-    // };
 
     UserSimplePreferences.addChannel(channelVideos);
 
@@ -128,58 +108,3 @@ class _AddChannelsState extends State<AddChannels> {
 
   }
 }
-
-
-
-
-// class AddChannels extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: AddChannelsPage(),
-//     );
-//   }
-// }
-//
-// class AddChannelsPage extends StatefulWidget {
-//   @override
-//   _AddChannelsState createState() => _AddChannelsState();
-// }
-//
-// class _AddChannelsState extends State<AddChannelsPage> {
-//
-//   Future<void> saveChannel(channel) async {
-//     var userName = "Paul";
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     prefs.setString('userName', userName);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     var sampleArray = ["one", "two", "three"];
-//     return  Column(
-//       children: [
-//        TextField(
-//       obscureText: true,
-//       decoration: InputDecoration(
-//         border: OutlineInputBorder(),
-//         labelText: 'Enter Channel ID',
-//       ),
-//     ),
-//         ElevatedButton(
-//           style: ButtonStyle(
-//             backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-//           ),
-//           onPressed: () { },
-//           child: Text('Looks like a RaisedButton'),
-//         )
-//     ]
-//     );
-//
-//
-//
-//     // return const Text("Hello");
-//
-//   }
-// }

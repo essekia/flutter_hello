@@ -215,36 +215,3 @@ class _DemoAppState extends State<YoutubeChannelApp> {
 
   }
 }
-
-class Music {
-  final int? id;
-
-
-  Music({
-    this.id,
-
-  });
-
-  factory Music.fromJson(Map<String, dynamic> jsonData) {
-    return Music(
-      id: jsonData['id'] ?? '',
-
-    );
-  }
-
-  static Map<String, dynamic> toMap(Music music) => {
-    'id': music.id ?? '',
-
-  };
-
-  static String encode(List<Music> musics) => json.encode(
-    musics
-        .map<Map<String, dynamic>>((music) => Music.toMap(music))
-        .toList(),
-  );
-
-  static List<Music> decode(String musics) =>
-      (json.decode(musics) as List<dynamic>)
-          .map<Music>((item) => Music.fromJson(item))
-          .toList();
-}
