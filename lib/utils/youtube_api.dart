@@ -14,12 +14,13 @@ class YoutubeApi {
 
     var channel = await yt!.channels.get(channelId);
     var aboutPage =  await yt!.channels.getAboutPage(channelId);
-    log('getChannelInfo New aboutPage:');
-    print(aboutPage.thumbnails);
+    var thumbnail = aboutPage.thumbnails[0];
+    log('getChannelInfo New aboutPage thumbnailMediumUrl:');
+    print(thumbnail.url);
     var channelInfoToStore = {
       'channelId': channel.id.value,
       'title': channel.title,
-      'thumbnailMedium':  "https://yt3.ggpht.com/ytc/AKedOLRDqB-y_zJ_Yr7EzU4YKYhThsjHG7c0ql6zk8jKiw=s48-c-k-c0x00ffffff-no-rj",
+      'thumbnailMedium': thumbnail.url.toString(),
     };
     log('channelInfoToStore :');
     print(channelInfoToStore);
@@ -32,7 +33,7 @@ class YoutubeApi {
     yt = YoutubeExplode();
 
     var channel = await yt!.channels.get(channelId);
-    var videos = await yt!.channels.getUploads('UCbJgkRhA-d61PTVOE62Al9g').toList();
+    var videos = await yt!.channels.getUploads(channelId).toList();
 
     log('getChannelVideos New channel:');
     print(channel);

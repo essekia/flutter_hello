@@ -99,7 +99,7 @@ class _ChannelsListState extends State<ChannelsList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      channel['channelId'] ?? '',
+                      channel['title'] ?? '',
                       softWrap: true,
                       style: TextStyle(fontSize: 18.0),
                     ),
