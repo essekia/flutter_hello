@@ -15,7 +15,7 @@ class UserSimplePreferences {
   static Future init() async {
     _preferences = await SharedPreferences.getInstance();
 
-    // SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({}); // to reset State
   }
 
   // static Future setUsername(String username) async =>
@@ -37,14 +37,79 @@ class UserSimplePreferences {
      setChannels([]);
   }
 
-  static Future addChannel(Map<String, dynamic> channel) async {
-    print("addChannel channels: ");
+  static List<dynamic>? getChannelsInfo() {
+    var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
+    print("channelsJsoned: ");
+    print(channelsJsoned);
+    var channels = [];
+    for (var ii = 0; ii < channelsJsoned.length; ii++) {
+      var channelData = json.decode(channelsJsoned[ii]);
+      print("channelData[0] -- channelInfo before decode");
+      print(channelData[0]);
+
+      Map<String, dynamic> channelInfo = jsonDecode(channelData[0]);
+      print("channelData[0] -- channelInfo after decode");
+      print(channelInfo);
+      channels.add(channelInfo);
+    }
+
+    return channels;
+  }
+
+  static List<dynamic>? getAllChannelVideos() {
+    // var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
+    // print("channelsJsoned: ");
+    // print(channelsJsoned);
+    // var channelVideos = [];
+    // for (var ii = 0; ii < channelsJsoned.length; ii++) {
+    //   var channelData = json.decode(channelsJsoned[ii]);
+    //   print("channelData[1] -- channelVideos before decode");
+    //   print(channelData[1]);
+    //   var channelVideos = json.decode(channelData[1]);// videos in channelData
+    //   print("channelData[0] -- channelVideos after decode");
+    //   print(channelVideos);
+    //   channelVideos.add(channelVideos);
+    // }
+
+    List? channels = getChannels();
+    var channelVideos = [];
+    for (var ii = 0; ii < (channels?.length ?? 0); ii++) {
+      channelVideos.add(channels?[ii]['videos']);
+    }
+
+    return channelVideos;
+  }
+
+  static List<dynamic>? getChannels() {
+    print("UserSimpPreference getChannels: ");
+    var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
+    print("channelsJsoned: ");
+    print(channelsJsoned);
+    var channels = [];
+    for (var ii = 0; ii < channelsJsoned.length; ii++) {
+      var channelDecoded = new Map();
+      var channelData = json.decode(channelsJsoned[ii]);
+      channelDecoded['channelInfo'] = json.decode(channelData[0]);
+      channelDecoded['videos'] = json.decode(channelData[1]);
+      channels.add(channelDecoded);
+    }
+
+    return channels;
+  }
+
+  static Future addChannel(Map<dynamic, dynamic> channel) async {
+    print("addChannel channelData: ");
+    print(channel);
     var channels = getChannels() ?? [];
+    print("addChannel getting Channels: ");
+    print(channels);
     channels?.add(channel);
     var channelsString = itemsToJson(channels);
+    print("addChannel after Setting Channels: ");
     print(channels);
 
     await _preferences?.setStringList(_keyChannels, channelsString.cast<String>() );
+
   }
 
   static Future deleteChannel(channelId) async {
@@ -56,17 +121,12 @@ class UserSimplePreferences {
     });
     var channelsString = itemsToJson(channels);
     await _preferences?.setStringList(_keyChannels, channelsString.cast<String>() );
+
   }
 
-  static List<dynamic>? getChannels() {
-    var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
-    var channels = [];
-    for (var ii = 0; ii < channelsJsoned.length; ii++) {
-      channels.add(json.decode(channelsJsoned[ii]));
-    }
 
-    return channels;
-  }
+
+
 
   static itemsToJson(channels) {
     // return channels.toJson();
@@ -77,8 +137,13 @@ class UserSimplePreferences {
     // });
 
      for(var ii = 0; ii < channels.length; ii++){
-       var item = Map<String, dynamic>.from(channels[ii]);
-       String itemString = json.encode(item);
+       var item = Map<dynamic, dynamic>.from(channels[ii]);
+       // 1. Encode channel['videos]
+       var channelJsoned = List.filled(2, "");
+       channelJsoned[0] = json.encode(item['channelInfo']);
+       channelJsoned[1] = json.encode(item['videos']);
+
+       String itemString = json.encode(channelJsoned);
        stringifiedChannelList.add(itemString);
        print("ii: " + ii.toString());
        print(itemString is String);

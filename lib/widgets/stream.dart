@@ -12,21 +12,23 @@ import '../utils/state_container.dart';
 // Routes
 import 'video_player.dart';
 
-class YoutubeChannel extends StatelessWidget {
+class StreamWidget extends StatefulWidget {
+  // StreamWidget(List allStreamVideos);
+  //
+  // Object? get allStreamVideos => null;
+
+  List allStreamVideos = [];
+  StreamWidget(
+      {Key? key,  required this.allStreamVideos})
+      : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: YoutubeChannelApp(),
-    );
-  }
+  _StreamState createState() => _StreamState();
 }
 
-class YoutubeChannelApp extends StatefulWidget {
-  @override
-  _DemoAppState createState() => _DemoAppState();
-}
 
-class _DemoAppState extends State<YoutubeChannelApp> {
+
+class _StreamState extends State<StreamWidget> {
 
   static String apiKey = "AIzaSyD1rB5tSMhu3b7W2X3SIEdFfQ-gimxysfQ";
 
@@ -36,6 +38,8 @@ class _DemoAppState extends State<YoutubeChannelApp> {
   List channels = [];
   List topVideos = [];
   List _allVideosState = [];
+  // final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  // new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -45,55 +49,60 @@ class _DemoAppState extends State<YoutubeChannelApp> {
     getAllChannelVideos();
     // getChannelVideos();
 
+    // WidgetsBinding.instance
+    //     ?.addPostFrameCallback((_) => _refreshIndicatorKey.currentState?.show());
+
+    print("widget.allStreamVideos: ");
+    print(widget.allStreamVideos);
+
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    log('didUpdateWidget');
+    super.didUpdateWidget(oldWidget);
+    getAllChannelVideos();
+
   }
 
   // Main Function
   Future<void> getAllChannelVideos() async {
-   var allVideos =  await YoutubeApi.getAllChannelVideos();
+    print("Stream->getAllChannelVideos()");
+    var allVideos =  await YoutubeApi.getAllChannelVideos();
+    allVideos.take(50);
     setState(() { _allVideosState = allVideos; });
 
   }
 
-  Future getChannelVideos(channelId) async {
-    var _baseUrl = 'www.youtube.googleapis.com';
-    // var channelId = 'UC5C1JAn2BOuquNNXI2oEgaA';
-    var channelUri = Uri.parse('https://youtube.googleapis.com/youtube/v3/search?part=id,snippet&maxResults=15&channelId='+channelId+'&key='+apiKey);
 
-    var method1Response = await http.get(channelUri);
-    log('Method1 Response status: ${method1Response.statusCode}');
-    log('Method1 Response body: ${method1Response.body}');
 
-    var channelContentsBody = await jsonDecode(method1Response.body);
-
-    // todo: fromJson() -> List of youtube videos
-
-    List channelContents = await channelContentsBody['items'];
-    return channelContents;
+  Future<Null> _refresh() async{
+    return await YoutubeApi.getAllChannelVideos().then((_videos) {
+      setState(() => _allVideosState = _videos);
+    });
   }
 
 
   @override
   Widget build(BuildContext context) {
-
-    var sampleArray = ["one", "two", "three"];
-
     final container = StateContainer.of(context);
-    var allStreamVideos = container.allStreamVideos;
+    // var allStreamVideos = container.allStreamVideos;
+    // print("allStreamVideos.length: ");
+    // print(allStreamVideos.length);
 
-
-    // var channels = UserSimplePreferences.getChannels() ?? [];
-    print("videosList build - channels" );
-    print(channels);
-    print("allStreamVideos: ");
-    print(allStreamVideos);
+    print("videosList build - channels count" );
+    print(channels.length);
+    print("widget.allStreamVideos count: ");
+    print(widget.allStreamVideos?.length);
     // final videosList = _allVideosState.take(50).toList();
-    _allVideosState.sort((a, b) => a['orderInChannel'].compareTo(b['orderInChannel']));
-    return ListView(
+    widget.allStreamVideos.sort((a, b) => a['orderInChannel'].compareTo(b['orderInChannel']));
+    return  ListView(
         // scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(), // new
         shrinkWrap: true,
-        children: _allVideosState.take(50).map<Widget>(listItem).toList()
+        children: widget.allStreamVideos.map<Widget>(listItem).toList()
     );
+
 
 
     // return const Text("Hello");

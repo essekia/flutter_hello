@@ -20,7 +20,7 @@ class YoutubeApi {
     var channelInfoToStore = {
       'channelId': channel.id.value,
       'title': channel.title,
-      'thumbnailMedium': thumbnail.url.toString(),
+      'thumbnailMedium': thumbnail.url.toString() ?? '',
     };
     log('channelInfoToStore :');
     print(channelInfoToStore);
@@ -29,18 +29,33 @@ class YoutubeApi {
 
   }
   static Future getChannelVideos(channelId) async {
+    int videosLimit = 10;
     YoutubeExplode? yt;
     yt = YoutubeExplode();
 
     var channel = await yt!.channels.get(channelId);
-    var videos = await yt!.channels.getUploads(channelId).toList();
+    var videos = await yt!.channels.getUploads(channelId).take(20).toList();
 
     log('getChannelVideos New channel:');
     print(channel);
     log('getChannelVideos New channel -- :');
     log('getChannelVideos New:' + videos.length.toString());
     print(videos);
-    return videos;
+    var orderInChannel = 0;
+    final videosOfChannel = videos.map((video){
+      var videoObject = {
+        'id': video.id.value,
+        'title': video.title,
+        'kind' : 'video',
+        'thumbnailUrl' : video.thumbnails.mediumResUrl,
+        'orderInChannel' : orderInChannel,
+      };
+      orderInChannel++;
+
+      return videoObject;
+    }).take(videosLimit).toList();
+
+    return videosOfChannel;
   }
 
   static Future getChannelVideosStable(channelId) async {
@@ -63,30 +78,32 @@ class YoutubeApi {
 
   // Main Function
   static Future<List> getAllChannelVideos() async {
+    print('getAllChannelVideos');
     List allVideos = [];
     List channels = [];
 
-    channels = UserSimplePreferences.getChannels() ?? [];
-    print('getAllChannelVideos channels: ');
-    print(channels);
+    channels = UserSimplePreferences.getAllChannelVideos() ?? [];
+    print('getAllChannelVideos channels count: ');
+    print(channels.length);
 
     for (var ii = 0; ii < channels.length; ii++) {
-      var channel = channels[ii];
-      print('loop: ' + ii.toString());
-      List channelContents = await getChannelVideos(channel['channelId']);
-      var orderInChannel = 0;
-      final videosOfChannel = channelContents.map((video){
-        var videoObject = {
-          'id': video.id.value,
-          'title': video.title,
-          'kind' : 'video',
-          'thumbnailUrl' : video.thumbnails.mediumResUrl,
-          'orderInChannel' : orderInChannel,
-        };
-        orderInChannel++;
-
-        return videoObject;
-      }).toList();
+      var videosOfChannel = channels[ii];
+      // var channel = channels[ii];
+      // print('loop: ' + ii.toString());
+      // List channelContents = await getChannelVideos(channel['channelId']);
+      // var orderInChannel = 0;
+      // final videosOfChannel = channelContents.map((video){
+      //   var videoObject = {
+      //     'id': video.id.value,
+      //     'title': video.title,
+      //     'kind' : 'video',
+      //     'thumbnailUrl' : video.thumbnails.mediumResUrl,
+      //     'orderInChannel' : orderInChannel,
+      //   };
+      //   orderInChannel++;
+      //
+      //   return videoObject;
+      // }).take(10).toList();
 
 
       allVideos.addAll(videosOfChannel);

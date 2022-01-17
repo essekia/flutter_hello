@@ -5,6 +5,8 @@ import 'utils/youtube_api.dart';
 import '../utils/dummy_preference.dart';
 import 'widgets/channels_list.dart';
 
+import 'utils/state_container.dart';
+
 
 class AddChannels extends StatefulWidget {
   @override
@@ -41,6 +43,14 @@ class _AddChannelsState extends State<AddChannels> {
     UserSimplePreferences.setChannels(channels);
   }
 
+  Future<void> getAllChannelVideos() async {
+    var allVideos =  await YoutubeApi.getAllChannelVideos();
+    final container = StateContainer.of(context);
+
+    container.updateUserInfo(allVideos);
+  }
+
+
   Future<void> saveChannel(channelFieldData) async {
     print("channelFieldData: " + channelFieldData);
     print(channelFieldData);
@@ -49,9 +59,15 @@ class _AddChannelsState extends State<AddChannels> {
     var  endIndex = channelFieldData.indexOf(end);
     var channelId = (channelFieldData.substring(endIndex + end.length , channelFieldData.length));
     print("channelId: " + channelId);
-    var channelVideos = await YoutubeApi.getChannelInfo(channelId);
+    var channelData = new Map();
+    channelData['channelInfo'] = await YoutubeApi.getChannelInfo(channelId);
+    channelData['videos'] = await YoutubeApi.getChannelVideos(channelId);
+    print("saveChannel-> channelVideos: ");
+    print(channelData);
 
-    UserSimplePreferences.addChannel(channelVideos);
+    UserSimplePreferences.addChannel(channelData);
+    getAllChannelVideos();
+    setState(() {});
 
     Navigator.push(
       context,

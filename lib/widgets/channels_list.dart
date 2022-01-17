@@ -1,23 +1,11 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:youtube_api/youtube_api.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io';
+
 import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/preference.dart';
 import '../utils/dummy_preference.dart';
-
-
-// class ChannelsList extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: ChannelsListApp(),
-//     );
-//   }
-// }
+import '../add_channel.dart';
 
 class ChannelsList extends StatefulWidget {
   @override
@@ -50,7 +38,7 @@ class _ChannelsListState extends State<ChannelsList> {
   @override
   Widget build(BuildContext context) {
 
-    var channels = UserSimplePreferences.getChannels() ?? [];
+    var channels = UserSimplePreferences.getChannelsInfo() ?? [];
     print("channels_list.dart channels");
     print(channels);
 
@@ -58,11 +46,33 @@ class _ChannelsListState extends State<ChannelsList> {
         appBar: AppBar(
           title: const Text("Channels List"),
         ),
-        body: ListView(
-          // scrollDirection: Axis.vertical,
-          physics: const NeverScrollableScrollPhysics(), // new
-          shrinkWrap: true,
-          children: channels.map<Widget>(listItem).toList()
+        body: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddChannels()),
+                      );
+                    },
+                    label: Text('Add Channel'),
+                    icon: Icon(Icons.add),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+                ListView(
+                // scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(), // new
+                shrinkWrap: true,
+                children: channels.map<Widget>(listItem).toList()
+              )
+            ]
         )
     );
   }
@@ -74,6 +84,7 @@ class _ChannelsListState extends State<ChannelsList> {
   Widget listItem(channel) {
     log('channels_list listVideo');
     print(channel);
+    print(channel['thumbnailMedium']);
     log('-- channels_list listVideo');
     // if (video['id']['kind'] != "youtube#video") {
     //   return Card();
@@ -88,10 +99,10 @@ class _ChannelsListState extends State<ChannelsList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(right: 20.0),
+                padding: const EdgeInsets.only(right: 5.0),
                 child: Image.network(
                   channel['thumbnailMedium'] ?? '',
-                  width: 120.0,
+                  width: 60.0,
                 ),
               ),
               Expanded(
@@ -103,14 +114,6 @@ class _ChannelsListState extends State<ChannelsList> {
                       softWrap: true,
                       style: TextStyle(fontSize: 18.0),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(vertical: 3.0),
-                    //   child: Text(
-                    //     video.channelTitle,
-                    //     softWrap: true,
-                    //     style: TextStyle(fontWeight: FontWeight.bold),
-                    //   ),
-                    // ),
                     Text(
                       channel['channelId'] ?? '',
                       softWrap: true,
