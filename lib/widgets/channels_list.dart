@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/preference.dart';
 import '../utils/dummy_preference.dart';
 import '../add_channel.dart';
+import 'package:flutter_hello/main.dart';
 
 class ChannelsList extends StatefulWidget {
   @override
@@ -60,6 +61,19 @@ class _ChannelsListState extends State<ChannelsList> {
                     },
                     label: Text('Add Channel'),
                     icon: Icon(Icons.add),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => FirstRoute()),
+                      );
+                    },
+                    label: Text('Stream'),
+                    icon: Icon(Icons.arrow_back),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blue,
                     ),

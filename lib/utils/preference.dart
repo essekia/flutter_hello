@@ -17,7 +17,7 @@ class UserSimplePreferences {
   static Future init() async {
     _preferences = await SharedPreferences.getInstance();
 
-    // SharedPreferences.setMockInitialValues({}); // to reset State
+    SharedPreferences.setMockInitialValues({}); // to reset State
   }
 
   // static Future setUsername(String username) async =>
@@ -140,9 +140,12 @@ class UserSimplePreferences {
     var channels = getChannels() ?? [];
     channels.removeWhere((item) {
       print("removeWhere item: ");
-      print(item);
-      return item['channelId'] == channelId;
+      print(item['channelId']);
+      return item['channelInfo']['channelId'] == channelId;
     });
+
+    print("after Remove channels: ");
+    print(channels);
     var channelsString = itemsToJson(channels);
     await _preferences?.setStringList(_keyChannels, channelsString.cast<String>() );
 

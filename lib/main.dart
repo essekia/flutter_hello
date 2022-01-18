@@ -106,6 +106,12 @@ class FirstRouteState extends State<FirstRoute> {
                   );
                 },
               ),
+            ElevatedButton(
+              child: const Text('Refresh'),
+              onPressed: () {
+                _handleRefresh();
+              },
+            ),
             // ElevatedButton(
             //   child: const Text('Video player'),
             //   onPressed: () {
