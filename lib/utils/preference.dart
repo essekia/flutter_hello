@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:flutter_hello/utils/channel.dart';
+
 class UserSimplePreferences {
   static SharedPreferences? _preferences;
 
@@ -15,7 +17,7 @@ class UserSimplePreferences {
   static Future init() async {
     _preferences = await SharedPreferences.getInstance();
 
-    SharedPreferences.setMockInitialValues({}); // to reset State
+    // SharedPreferences.setMockInitialValues({}); // to reset State
   }
 
   // static Future setUsername(String username) async =>
@@ -37,23 +39,51 @@ class UserSimplePreferences {
      setChannels([]);
   }
 
-  static List<dynamic>? getChannelsInfo() {
+  static List<dynamic>? getChannels() {
+    print("UserSimpPreference getChannels: ");
     var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
     print("channelsJsoned: ");
     print(channelsJsoned);
     var channels = [];
     for (var ii = 0; ii < channelsJsoned.length; ii++) {
+      var channelDecoded = new Map();
       var channelData = json.decode(channelsJsoned[ii]);
-      print("channelData[0] -- channelInfo before decode");
-      print(channelData[0]);
-
-      Map<String, dynamic> channelInfo = jsonDecode(channelData[0]);
-      print("channelData[0] -- channelInfo after decode");
-      print(channelInfo);
-      channels.add(channelInfo);
+      channelDecoded['channelInfo'] = json.decode(channelData[0]);
+      channelDecoded['videos'] = json.decode(channelData[1]);
+      channels.add(channelDecoded);
     }
 
     return channels;
+  }
+
+  static List<dynamic>? getChannelsInfo() {
+    print("getChannelsInfo: ");
+    var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
+    var channels = getChannels() ?? [];
+    print("All channelsJsoned: ");
+    print(channelsJsoned);
+    var channelsWithInfo = [];
+    for (var ii = 0; ii < channels.length; ii++) {
+      var channel = channels[ii];
+      print("channel[channelInfo]: " + ii.toString());
+      print(channel['channelInfo']);
+
+      channelsWithInfo.add(channel['channelInfo']);
+    }
+    print("channelsWithInfo: ");
+    print(channelsWithInfo);
+    // for (var ii = 0; ii < channelsJsoned.length; ii++) {
+    //   var channelData = json.decode(channelsJsoned[ii]);
+    //   print("channelData[0] -- channelInfo before decode");
+    //   print(channelData[0]);
+    //
+    //   Map<String, dynamic> channelInfo = jsonDecode(channelData[0]);
+    //   print("channelData[0] -- channelInfo after decode");
+    //   print(channelInfo);
+    //   channels.add(channelInfo);
+    // }
+
+    return channelsWithInfo;
   }
 
   static List<dynamic>? getAllChannelVideos() {
@@ -80,22 +110,7 @@ class UserSimplePreferences {
     return channelVideos;
   }
 
-  static List<dynamic>? getChannels() {
-    print("UserSimpPreference getChannels: ");
-    var channelsJsoned = _preferences?.getStringList(_keyChannels) ?? [];
-    print("channelsJsoned: ");
-    print(channelsJsoned);
-    var channels = [];
-    for (var ii = 0; ii < channelsJsoned.length; ii++) {
-      var channelDecoded = new Map();
-      var channelData = json.decode(channelsJsoned[ii]);
-      channelDecoded['channelInfo'] = json.decode(channelData[0]);
-      channelDecoded['videos'] = json.decode(channelData[1]);
-      channels.add(channelDecoded);
-    }
 
-    return channels;
-  }
 
   static Future addChannel(Map<dynamic, dynamic> channel) async {
     print("addChannel channelData: ");
@@ -104,11 +119,20 @@ class UserSimplePreferences {
     print("addChannel getting Channels: ");
     print(channels);
     channels?.add(channel);
+    print("addChannel after adding channel: ");
+    print(channels);
     var channelsString = itemsToJson(channels);
-    print("addChannel after Setting Channels: ");
+    // print("addChannel after Setting Channels: ");
+    // print(channels);
+    print("addChannel after adding channel: ");
     print(channels);
 
     await _preferences?.setStringList(_keyChannels, channelsString.cast<String>() );
+
+    print("After setting preference:");
+    channels = getChannels() ?? [];
+    print("addChannel after Setting Channels: ");
+    print(channels);
 
   }
 
